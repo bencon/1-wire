@@ -3,6 +3,9 @@
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 
+//#include <math.h>
+
+
 extern oneWire status;
 extern Bool T_EN;
 extern Bool R_EN;
@@ -381,4 +384,67 @@ void pushStack(uint8_t bit_num, uint8_t rom_num, uint8_t temp){
 
 void popStack(){
      stackPtr--; 
+}
+
+void convertTemp(uint8_t rom[], BOOL skip){//if skip ==1, issue a convert to all devices
+     reset();
+     if (!skip){
+       writeByte(MATCHROM);
+       writeROM(rom);
+     }
+     else{
+       writeByte(SKIPROM);
+     }
+     writeByte(CONVERTT);
+     status.mode = 1; 
+}
+
+double farenheitConversion(uint8_t device){
+    /*
+     uint16_t raw = (status.scratchpad[device][1]<<8) | status.scratchpad[device][0];
+     uint8_t config;
+     double baseFrac;
+     config = (status.scratchpad[device][4] >> 5) & 0x03; //grabs the important configuration register bits
+     if (config == 0x00){ //9 bit resolution
+        raw = raw <<3;
+     } 
+     else if (config == 0x01){ //10 bit resolution
+        raw = raw <<2;
+     }
+     else if (config == 0x02){ //11 bit resolution   
+        raw = raw <<1;    
+     }
+     //otherwise default 12 bit resolution
+     //celcius = (double)raw / 16.0
+     return (double)(((double)raw /16.0) * 1.8) +32.0;  //for degrees farenheit
+     */
+     uint16_t raw = (status.scratchpad[device][1]<<8) | status.scratchpad[device][0];
+     uint8_t config;
+     double baseFrac;
+     uint8_t whole;
+     uint8_t frac;
+     double celcius;
+     config = (status.scratchpad[device][4] >> 5) & 0x03; //grabs the important configuration register bits
+     if (config == 0x00){ //9 bit resolution
+        baseFrac = 0.5;
+        whole =  raw >> 1;
+        frac = raw & 0x01;
+     } 
+     else if (config == 0x01){ //10 bit resolution
+        baseFrac = 0.25;
+        whole =  raw >> 2;
+        frac = raw & 0x03;
+     }
+     else if (config == 0x02){ //11 bit resolution   
+        baseFrac = 0.125;
+        whole =  raw >> 3;
+        frac = raw & 0x07;
+     } 
+     else{  //otherwise default 12 bit resolution
+        baseFrac = 0.0625;
+        whole =  raw >> 4;
+        frac = raw & 0x0E;
+     }
+     celcius = whole; //+ (frac * baseFrac);
+     return (celcius*1.8)+32.0;  //for degrees farenheit
 }

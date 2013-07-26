@@ -43,6 +43,8 @@ BOOL readPower(uint8_t rom[]);
 void searchROM(uint8_t rom_num, uint8_t discrepancy_count);
 void pushStack(uint8_t bit_num, uint8_t rom_num, uint8_t temp);
 void popStack();
+void convertTemp(uint8_t rom[], BOOL skip);
+double farenheitConversion(uint8_t device);
 
 typedef struct{
   uint8_t stage;  //0- aquire ROM, 1- aquire scratchpad, 
