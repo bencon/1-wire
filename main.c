@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "main.h"
 #include "oneWire.h"
+#include "DS18B20.h"
+#include "DS2431.h"
 #include "application.h"
 
 
@@ -19,7 +21,9 @@ uint8_t SCICOUNT;
 uint8_t temp; //dummy for clearing the SCI4 recieve full flag
 Bool T_EN;
 Bool R_EN;                      
-oneWire status;
+DS18B20 status_B20;
+DS2431 status_2431;
+oneWire info;
 
 void main(void) {
   DDRJ_DDRJ7 = OUTPUT;
