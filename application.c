@@ -27,7 +27,7 @@ void process(void){
      writeScratch_B20(0xAABBFF,3, status_B20.romTable[0]);
      writeScratch_B20(0xCCDDFF,3, status_B20.romTable[1]);
      writeScratch_B20(0x1122FF,3, status_B20.romTable[2]);
-     copyScratch_2431(0xAB,0x0020, 0, 60);
+     copyScratch_2431(0xAB,0x0000, 0, 60);
      convertTemp(NULL,1);
      DelayMs(100);
      status_2431.stage = 2;
