@@ -97,7 +97,7 @@ void dis_R(void){  //disables receive interrupts
     R_EN = 0; 
 }
 
-void up(void){
+void up(void){ //pin 29 J103
   PTJ_PTJ0 = 1;
 }
 

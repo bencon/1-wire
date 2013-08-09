@@ -12,80 +12,50 @@ extern oneWire info;
 BOOL powerCheck;
 uint8_t index;
 BOOL first= 0;
+uint8_t ad;
 double temperature;
+uint8_t sample[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
+uint8_t sample2[8] = {{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01}};
+//uint8_t sample3[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
 
 void process(void){
   
   if (status_2431.stage == 0){
-     searchROM(status_B20.romTable,0,0,0x28, &status_B20.deviceCount);
+     //searchROM(status_B20.romTable,0,0,0x28, &status_B20.deviceCount);
      DelayUs(100);
      searchROM(status_2431.romTable,0,0,0x2D, &status_2431.deviceCount);
      DelayUs(100);
      status_2431.stage = 1;
   } 
   else if (status_2431.stage ==1){  
-     writeScratch_B20(0xAABBFF,3, status_B20.romTable[0]);
-     writeScratch_B20(0xCCDDFF,3, status_B20.romTable[1]);
-     writeScratch_B20(0x1122FF,3, status_B20.romTable[2]);
-     copyScratch_2431(0xAB,0x0000, 0, 60);
-     convertTemp(NULL,1);
-     DelayMs(100);
+    // writeScratch_B20(0xAABBFF,3, status_B20.romTable[0]);
+     //writeScratch_B20(0xCCDDFF,3, status_B20.romTable[1]);
+     //writeScratch_B20(0x1122FF,3, status_B20.romTable[2]);
+     //setProtection_2431(1,0x00,0x00,0x00,0x00);
+     //setOnes_2431(0,0);
+     //DelayUs(100);
+     //convertTemp(NULL,1);
+     copyScratch_2431(sample, 0x0000, 0, 16);
+     DelayUs(100);
+     for (ad = 0;ad<144;ad+=8){
+        up();
+        readMemory_2431(0,ad, 8);
+        down();
+        DelayUs(100);
+     }
      status_2431.stage = 2;
   } 
   else if (status_2431.stage ==2){ 
       for (index=0;index<3;index++){
-          aquireScratch_B20(status_B20.romTable[index], index);
+          //aquireScratch_B20(status_B20.romTable[index], index);
       }
-      readMemory_2431(0, 0x0000, 100);
+      //readMemory_2431(1, 0x0000, 20);
       stop();
   }
   
   else if (status_2431.stage == 10){  //do nothing, wait for a continue    
   }
   
-  /*
-  if (status.stage == 0){
-      
-      //aquireROM();  //only for use with single one-wire device
-      
-      searchROM(0,0);
-      writeScratch(0xAABBFF,3, status.romTable[0]);
-      writeScratch(0xCCDDFF,3, status.romTable[1]);
-      writeScratch(0x1122FF,3, status.romTable[2]);
-      if (!first){  
-        convertTemp(NULL,1);
-        first = 1;
-      }
-      up();
-      DelayMs(100);
-      down();
-      DelayMs(1);
-      up();
-      status.stage = 2;
-    
-  }
-  else if (status.stage == 1){
-      for (index=0;index<status.deviceCount;index++){
-          aquireScratch(status.romTable[index], index);
-      }
-      //if (checkScratch(0)){
-          status.stage =3;
-      //}
-  } 
-  else if (status.stage == 2){
-       //writeScratch(0xAABBFF,3, status.romTable[0]);
-      // writeScratch(0xCCDDFF,3, status.romTable[1]);
-       //writeScratch(0x1122FF,3,status.romTable[2]);
-       status.stage = 1;
-  } 
-  else if (status.stage == 3){ ///check power stage
-        powerCheck= readPower(status.romTable[0]);
-        temperature = farenheitConversion(0);
-        stop();
-  }
-  else if (status.stage == 10){  //do nothing, wait for a continue    
-  }
-  */
 }
 
 void stop(void){

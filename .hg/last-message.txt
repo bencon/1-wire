@@ -1,1 +1,1 @@
-EEPROM just now working
+Copy Scratchpad and Read Memory now working but very unoptimized

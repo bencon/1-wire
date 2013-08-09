@@ -17,17 +17,17 @@
 #define DS2431_OVERDRIVEMATCH 0x69
 
 void readScratch_2431(uint8_t romNum);
-void copyScratch_2431(uint8_t data, uint16_t address, uint8_t romNum, uint8_t len);
+void copyScratch_2431(uint8_t data[8], uint16_t address, uint8_t romNum, uint8_t len);
 void readMemory_2431(uint8_t romNum, uint16_t address, uint8_t len);
+void setProtection_2431(uint8_t romNum, uint8_t page0, uint8_t page1, uint8_t page2, uint8_t page3);
 //BOOL checkScratch(uint8_t deviceIndex);
-
-
+void setOnes_2431(uint8_t romNum, BOOL readMem);
 
 typedef struct{
   uint8_t romTable[16][8];//to hold at max devices
   uint8_t deviceCount; //a count of how many 1-wire deivices are on the bus
   uint8_t scratchpad[14];
-  uint8_t memory[8][124];
+  uint8_t memory[8][144];
   uint8_t stage;
 } DS2431;
 
