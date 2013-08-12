@@ -6,6 +6,7 @@
 #include "oneWire.h"
 #include "DS18B20.h"
 #include "DS2431.h"
+#include "DS28EC20.h"
 #include "application.h"
 
 
@@ -23,6 +24,7 @@ Bool T_EN;
 Bool R_EN;                      
 DS18B20 status_B20;
 DS2431 status_2431;
+DS28EC20 status_28EC20;
 oneWire info;
 
 void main(void) {

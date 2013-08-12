@@ -1,6 +1,8 @@
 #ifndef _DS18B20_H
 #define _DS18B20_H
 
+//Family Code = 0x28
+
 //#############  DS18B20 Commands  ###################
 
 #define DS18B20_RESET 0xF0

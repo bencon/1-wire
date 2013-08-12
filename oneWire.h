@@ -32,6 +32,7 @@ void resetStack(void);
 void pushStack(uint8_t bit_num, uint8_t rom_num, uint8_t incomplete);
 void popStack(void);
 void searchROM(uint8_t location[16][8] , uint8_t rom_num, uint8_t discrepancy_count, uint8_t family, uint8_t * deviceCount);
+void readROM(uint8_t *location, uint8_t *deviceCount);
 
 void reset();
 void writeROM(uint8_t rom[]);

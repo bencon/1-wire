@@ -1,1 +1,1 @@
-Copy Scratchpad and Read Memory now working but very unoptimized
+Not quite functional

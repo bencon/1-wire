@@ -1,6 +1,7 @@
 #ifndef _DS2431_H
 #define _DS2431_H
 
+//Family Code = 0x2d
 
 //#############  DS2431 Commands  ###################
 
@@ -15,6 +16,8 @@
 #define DS2431_RESUME 0xA5
 #define DS2431_OVERDRIVESKIP 0x3C
 #define DS2431_OVERDRIVEMATCH 0x69
+
+
 
 void readScratch_2431(uint8_t romNum);
 void copyScratch_2431(uint8_t data[8], uint16_t address, uint8_t romNum, uint8_t len);

@@ -2,6 +2,7 @@
 #include "oneWire.h"
 #include "DS18B20.h"
 #include "DS2431.h"
+#include "DS28EC20.h"
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 
@@ -246,6 +247,16 @@ void reset(){ //the necessary reset sequence to address 1-wire devices
      DelayUs(50);
      setBaud(12);
      DelayUs(10);
+}
+
+void readROM(uint8_t location[8], uint8_t *deviceCount){ 
+    reset();
+    writeByte(READROM);
+    storeData(8, location);
+    if (status_B20.deviceCount == 0){
+        status_B20.deviceCount = 1;
+    }
+    *deviceCount = 1;
 }
 
 //aquires the ROM addresses of all 1-wire devices on the bus and stores them in status.romTable

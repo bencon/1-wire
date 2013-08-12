@@ -40,10 +40,12 @@ void copyScratch_2431(uint8_t data[8], uint16_t address, uint8_t romNum, uint8_t
       address = address + 8;
       DelayUs(800);
     }
-    DelayMs(300);
+    //DelayMs(300);
     //readMemory_2431(romNum, address, len); //may not want this here
     
 }
+
+//This is intended to set all memory to FF so that EPROM mode will work. Should probably either fix or remove this function
 void setOnes_2431(uint8_t romNum, BOOL readMem){
     uint8_t ind;
     uint16_t add = 0x0000;
@@ -81,7 +83,9 @@ void readMemory_2431(uint8_t romNum, uint16_t address, uint8_t len){
     storeData(len, &status_2431.memory[romNum][address]);
     down();
 }
- 
+
+//Use this function to set protections on pages 0-3 of memory
+//55h for Write Protect, AAh for Read, 00h for no protections 
 void setProtection_2431(uint8_t romNum, uint8_t page0, uint8_t page1, uint8_t page2, uint8_t page3){
     uint8_t data[8];
     data[0] = page0;
@@ -95,4 +99,3 @@ void setProtection_2431(uint8_t romNum, uint8_t page0, uint8_t page1, uint8_t pa
     copyScratch_2431(data, 0x0080, romNum, 1); 
 }
 
-//add init funtions
