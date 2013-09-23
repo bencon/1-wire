@@ -1,4 +1,4 @@
-#include <hidef.h>      /* common defines and macros */
+#include <hidef.h>           /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,9 @@
 #include "DS2431.h"
 #include "DS28EC20.h"
 #include "application.h"
+#include "i2c.h"
+#include "PCA9553.h"
+#include "mcp4728.h"
 
 
 #pragma CODE_SEG __NEAR_SEG NON_BANKED
@@ -27,6 +30,12 @@ DS2431 status_2431;
 DS28EC20 status_28EC20;
 oneWire info;
 
+//i2c variables
+i2cStruct **previous;
+i2cStruct *DAC;
+i2cStruct *LED_Driver;
+
+/*     ///main for 1-wire
 void main(void) {
   DDRJ_DDRJ7 = OUTPUT;
   DDRJ_DDRJ6 = OUTPUT;
@@ -40,15 +49,30 @@ void main(void) {
   dis_R();
 	EnableInterrupts;
   for(;;) {
-    _FEED_COP(); /* feeds the dog */
+    _FEED_COP(); // feeds the dog 
     process();  
     DelayMs(1);
   }
-  
-  
-   /* loop forever */
+ }
+ */
 
+//main for i2c  
+void main(void){
+   i2cInit();
+   initI2cStruct(DAC);
+   initI2cStruct(LED_Driver);
+   DelayMs(1);
+   //EnableInterrupts;
+   for(;;) {
+     _FEED_COP(); // feeds the dog 
+     i2cProcess();  
+     DelayMs(1);
+   } 
+   
 }
+  
+  
+
 
 void DelayMs(uint16_t ms){
 	volatile uint16_t i;  // Needs volatile so compiler does not optimize
@@ -111,6 +135,19 @@ void interrupt SCI1_ISR(void){
       SCI1DRL = SCI1TOBESENT;  
       SCI1CR2_TIE = 0;	// disable transmit interrupts	
   } 
+}
+
+
+///////////////************////I2c intterupt
+void I2C_ISR(void){    //put in interrupts.c and fix name
+	if (IIC0_IBSR_TCF){	//a transfer was completed
+		i2c_fsm(*previous, 0);	//call I2C state machine
+	}	
+	if (IIC0_IBSR_IBAL){ //master lost arbitration
+		IIC0_IBSR_IBAL = 1;
+		(void)i2c_fsm(*previous, I2C_IDLE); //set the I2C machine to idle state
+	}
+	IIC0_IBSR_IBIF = 1; //clear the interrupt flag
 }
 
 typedef void (*near tIsrFunc)(void);
@@ -205,7 +242,7 @@ const near tIsrFunc VectorTable[] @0xFF10 =
   Unimplemented_ISR,    // Vector base + 0xBA   FLASH Fault Detect
   Unimplemented_ISR,    // Vector base + 0xBC   SPI2
   Unimplemented_ISR,    // Vector base + 0xBE   SPI1
-  Unimplemented_ISR,    // Vector base + 0xC0   IIC0 bus
+  I2C_ISR,              // Vector base + 0xC0   IIC0 bus
   Unimplemented_ISR,    // Vector base + 0xC2   SCI6
   Unimplemented_ISR,    // Vector base + 0xC4   CRG self-clock mode
   Unimplemented_ISR,    // Vector base + 0xC6   CRG PLL lock

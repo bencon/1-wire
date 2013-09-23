@@ -6,6 +6,9 @@
 #include "application.h"
 #include <hidef.h>      /* common defines and macros */
 #include "derivative.h"      /* derivative-specific definitions */
+#include "i2c.h"
+#include "mcp4728.h"
+#include "PCA9553.h"
 
 extern DS18B20 status_B20;
 extern DS2431 status_2431;
@@ -20,6 +23,14 @@ uint8_t sample[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
 uint8_t sample2[8] = {{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01}};
 //uint8_t sample3[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
 
+//////////////I2c Variables
+extern i2cStruct *DAC;
+extern i2cStruct *LED_Driver;
+void i2cProcess(void){
+   i2cNoInterruptTest(DAC);
+   //i2cSpeedTest(DAC);
+}
+                 
 void process(void){
   
   if (status_2431.stage == 0){
