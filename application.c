@@ -24,11 +24,43 @@ uint8_t sample2[8] = {{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01}};
 //uint8_t sample3[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
 
 //////////////I2c Variables
-extern i2cStruct *DAC;
-extern i2cStruct *LED_Driver;
+extern i2cStruct DAC;
+extern i2cStruct LED_Driver;
+uint8_t currentState;
 void i2cProcess(void){
-   i2cNoInterruptTest(DAC);
-   //i2cSpeedTest(DAC);
+   //i2cNoInterruptTest(&DAC);
+   /*
+   if (DAC.state == I2C_IDLE){
+      currentState = 1; 
+   } else if (DAC.state == I2C_START){
+      currentState = 2;
+   } else if (DAC.state == I2C_REPEATED_START){
+      currentState = 3;
+   } else if (DAC.state == I2C_WRITE_DATA){
+      currentState = 4;
+   } else if (DAC.state == I2C_WRITE_BYTE){
+      currentState = 5;
+   } else if (DAC.state == I2C_DUMMY_READ){
+      currentState = 6;
+   } else if (DAC.state == I2C_READ_BYTE){
+      currentState = 7;
+   } else if (DAC.state == I2C_STOP){
+      currentState = 8;
+   } else if (DAC.state == I2C_STOP){
+      currentState = 9;
+   } else if (DAC.state == I2C_STOP){
+      currentState = 10;
+   } else{
+      currentState = -1;
+   }
+   */
+   //i2cSpeedTest(&DAC);
+   //LEDDriverWriteFull(0x2B,0x80,0x0A,0xC0,0xE4); //as in programming example on page 12
+   if (index!=1){
+      //testDAC();
+      testPCA();
+      index = 1;
+   }
 }
                  
 void process(void){

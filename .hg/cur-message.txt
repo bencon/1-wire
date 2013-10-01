@@ -1,1 +1,1 @@
-Code for EPROM written but not yet working
+i2c struct now working, no interrupts being fired.

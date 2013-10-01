@@ -9,7 +9,7 @@
 
 #define AUTO_INCREMENT 0x10 //need to or with B2-B0
 //B2 - B0 bits
-#define PSC0 0b001
+#define PSC0 0x01
 #define PWM0 0b010
 #define PSC1 0b011
 #define PWM1 0b100
@@ -17,6 +17,6 @@
 
 void LEDDriverWriteByte(uint8_t reg, uint8_t value);
 void LEDDriverWriteFull(uint8_t value1,uint8_t value2,uint8_t value3,uint8_t value4,uint8_t value5); 
-
+void testPCA(void);
 
 #endif

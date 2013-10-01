@@ -17,6 +17,10 @@
 
 void interrupt _Startup(void);
 void interrupt Unimplemented_ISR(void);
+void interrupt I2C_ISR(void);
+void interrupt SCI4_ISR(void);
+void interrupt SCI1_ISR(void);
+void interrupt CAN_ISR(void);
 
 #pragma CODE_SEG DEFAULT
 
@@ -31,9 +35,9 @@ DS28EC20 status_28EC20;
 oneWire info;
 
 //i2c variables
-i2cStruct **previous;
-i2cStruct *DAC;
-i2cStruct *LED_Driver;
+i2cStruct *previous;
+i2cStruct DAC;
+i2cStruct LED_Driver;
 
 /*     ///main for 1-wire
 void main(void) {
@@ -59,13 +63,15 @@ void main(void) {
 //main for i2c  
 void main(void){
    i2cInit();
-   initI2cStruct(DAC);
-   initI2cStruct(LED_Driver);
+   initI2cStruct(&DAC);
+   initI2cStruct(&LED_Driver);
    DelayMs(1);
-   //EnableInterrupts;
+   EnableInterrupts;
    for(;;) {
      _FEED_COP(); // feeds the dog 
      i2cProcess();  
+     //IIC0_IBCR = 0xF0;
+		 //IIC0_IBDR = 0xF0;
      DelayMs(1);
    } 
    
@@ -107,7 +113,7 @@ void DelayUs(uint16_t us){
     
 void interrupt Unimplemented_ISR(void)
 {
-  asm BGND; //software breakpoint
+  //asm BGND; //software breakpoint
 }
 
 void interrupt SCI4_ISR(void){  
@@ -137,17 +143,26 @@ void interrupt SCI1_ISR(void){
   } 
 }
 
+void interrupt CAN_ISR(void){                       
+
+  uint8_t test;
+  test++;
+}
+
 
 ///////////////************////I2c intterupt
-void I2C_ISR(void){    //put in interrupts.c and fix name
+void interrupt I2C_ISR(void){    //put in interrupts.c and fix name
+  
+  //IIC0_IBSR_IBIF = 1; //clear the interrupt flag
 	if (IIC0_IBSR_TCF){	//a transfer was completed
-		i2c_fsm(*previous, 0);	//call I2C state machine
+		i2c_fsm(previous, 0);	//call I2C state machine
 	}	
 	if (IIC0_IBSR_IBAL){ //master lost arbitration
 		IIC0_IBSR_IBAL = 1;
-		(void)i2c_fsm(*previous, I2C_IDLE); //set the I2C machine to idle state
-	}
-	IIC0_IBSR_IBIF = 1; //clear the interrupt flag
+		(void)i2c_fsm(previous, I2C_IDLE); //set the I2C machine to idle state
+	}  
+  IIC0_IBSR_IBIF = 1; //clear the interrupt flag
+	//IIC0_IBSR_TCF = 1; //dont think this does anything
 }
 
 typedef void (*near tIsrFunc)(void);
@@ -218,10 +233,10 @@ const near tIsrFunc VectorTable[] @0xFF10 =
   Unimplemented_ISR,    // Vector base + 0x8A   SCI2
   Unimplemented_ISR,    // Vector base + 0x8C   PWM emergency shutdown
   Unimplemented_ISR,    // Vector base + 0x8E   Port P Interrupt
-  Unimplemented_ISR,    // Vector base + 0x90   CAN4 transmit
-  Unimplemented_ISR,    // Vector base + 0x92   CAN4 receive
-  Unimplemented_ISR,    // Vector base + 0x94   CAN4 errors
-  Unimplemented_ISR,    // Vector base + 0x96   CAN4 wake-up
+  CAN_ISR,    // Vector base + 0x90   CAN4 transmit
+  CAN_ISR,    // Vector base + 0x92   CAN4 receive
+  CAN_ISR,    // Vector base + 0x94   CAN4 errors
+  CAN_ISR,    // Vector base + 0x96   CAN4 wake-up
   Unimplemented_ISR,    // Vector base + 0x98   CAN3 transmit
   Unimplemented_ISR,    // Vector base + 0x9A   CAN3 receive
   Unimplemented_ISR,    // Vector base + 0x9C   CAN3 errors

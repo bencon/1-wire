@@ -14,6 +14,7 @@
 
 
 void DACSequentialWrite(uint8_t startChannel, uint16_t instruction);
+void testDAC(void);
 
 //Notes-- In order to use the general call read address command, the LDAC pin
 //	needs a logic transition from "High" to "Low". This is how the bus
@@ -32,6 +33,12 @@ PD1/PD0
   11-                     500kohm
 Gx - Gain Selection Bit-> 0=gain of 1 , 1=gain of 2
 UDac-> 0= Upload. Output (Vout is updated), 1= do not upload
+
+Vout:
+vref = internal:   vout = (vref * Dn * Gx)/4096   <--- vref = 2.048
+vref = vdd         vout = (vdd * Dn) / 4096
 */
+
+
 
 #endif
