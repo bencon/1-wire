@@ -182,11 +182,11 @@ void i2cNoInterruptTest(i2cStruct *device){
 
 void initI2cStruct(i2cStruct *device){
   int i;
-  for (i=0;i<10;i++){
+  for (i=0;i<15;i++){
     device->buffer[i] = 0;
   }
   device->instructionCount = 0;
   device->currentInstruction = 0;
   device->state = I2C_IDLE;
-  device->current_command = 5;  //set this back to 0, just a test 
+  device->current_command = 0;  
 }

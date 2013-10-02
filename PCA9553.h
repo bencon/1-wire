@@ -19,4 +19,16 @@ void LEDDriverWriteByte(uint8_t reg, uint8_t value);
 void LEDDriverWriteFull(uint8_t value1,uint8_t value2,uint8_t value3,uint8_t value4,uint8_t value5); 
 void testPCA(void);
 
+/*
+PWM duty cycles = (256 - value)/256
+so for a 50% duty cycle, set value to 0x80 (128 decimal)
+
+Blink Period = (value +1)/44
+so a blink period of .25s, set value to 0x0A
+
+LS0 - LED selector registor
+00 - On, 01 0ff, 10, blink at PWM0 rate, 11 blink at PWM1 rate
+bits 7:6- led3, 5:4- led2 3:2- led1, 1:0- led0
+*/
+
 #endif

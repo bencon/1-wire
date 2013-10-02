@@ -27,7 +27,7 @@ typedef enum{
 } i2c_states;  
 
 typedef struct{
-  uint8_t buffer[10]; //buffer of instructions to be executed (10 is arbitrary)
+  uint8_t buffer[15]; //buffer of instructions to be executed (10 is arbitrary)
   uint8_t instructionCount; //number of instructions in the buffer so the fsm knows when to stop
   uint8_t currentInstruction; //instruction to be executed
   enum i2c_states state;

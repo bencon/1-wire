@@ -39,11 +39,19 @@ void testPCA(){
    previous = &LED_Driver;
    LED_Driver.buffer[0] = 0xC4;
    LED_Driver.buffer[1] = 0x11;
-   LED_Driver.buffer[2] = 0x2b;
+   /*
+   LED_Driver.buffer[2] = 0x2b; //test as in programming example
    LED_Driver.buffer[3] = 0x80;
    LED_Driver.buffer[4] = 0x0A;
    LED_Driver.buffer[5] = 0xC0;
    LED_Driver.buffer[6] = 0xE4;
+   */
+   LED_Driver.buffer[2] = 0x2b; // PWM0 blink period 1 sec
+   LED_Driver.buffer[3] = 0x80; // PWM0 50% duty cycles
+   LED_Driver.buffer[4] = 0x0A; // blink period 11/44s
+   LED_Driver.buffer[5] = 0x80; // PWM1 50% duty
+   LED_Driver.buffer[6] = 0b11011000; //internet at PWM1, error off, charging at pwm0, power on
+   //LED_Driver.buffer[6] = 0b10101010;
    LED_Driver.instructionCount = 7;
    LED_Driver.currentInstruction = 0; 
    (void)i2c_fsm(&LED_Driver,I2C_EEPROM_WR);   //set the fsm 

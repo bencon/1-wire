@@ -12,8 +12,8 @@
 
 #include "main.h"
 
-
-void DACSequentialWrite(uint8_t startChannel, uint16_t instruction);
+void DACSingleChannelWrite(uint8_t channel, double voltage);
+void DACSequentialWrite(double C1, double C2, double C3, double C4);
 void testDAC(void);
 
 //Notes-- In order to use the general call read address command, the LDAC pin

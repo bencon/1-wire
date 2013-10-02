@@ -56,11 +56,23 @@ void i2cProcess(void){
    */
    //i2cSpeedTest(&DAC);
    //LEDDriverWriteFull(0x2B,0x80,0x0A,0xC0,0xE4); //as in programming example on page 12
-   if (index!=1){
-      //testDAC();
-      testPCA();
+   if (first == 0){
       index = 1;
+      first = 1;
    }
+   if (index==1){
+      //DACSequentialWrite(2.5,2.5,2.5,2.5);
+      DACSingleChannelWrite(2,1.25);
+      //testDAC();
+      //testPCA();
+      index = 2;
+      DelayMs(1);
+   }
+   if (index ==2){
+      testPCA();   
+      index =3;
+   }
+   
 }
                  
 void process(void){
