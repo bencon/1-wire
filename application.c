@@ -13,7 +13,9 @@
 extern DS18B20 status_B20;
 extern DS2431 status_2431;
 extern DS28EC20 status_28EC20;
-extern oneWire info; 
+extern oneWire info;
+extern i2cStruct DAC;
+extern i2cStruct LED_Driver; 
 BOOL powerCheck;
 uint8_t index;
 BOOL first= 0;
@@ -24,54 +26,90 @@ uint8_t sample2[8] = {{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01},{0x01}};
 //uint8_t sample3[8] = {{0x01},{0x02},{0x03},{0x04},{0x05},{0x06},{0x07},{0x08}};
 
 //////////////I2c Variables
-extern i2cStruct DAC;
-extern i2cStruct LED_Driver;
+
 uint8_t currentState;
 void i2cProcess(void){
-   //i2cNoInterruptTest(&DAC);
-   /*
-   if (DAC.state == I2C_IDLE){
-      currentState = 1; 
-   } else if (DAC.state == I2C_START){
-      currentState = 2;
-   } else if (DAC.state == I2C_REPEATED_START){
-      currentState = 3;
-   } else if (DAC.state == I2C_WRITE_DATA){
-      currentState = 4;
-   } else if (DAC.state == I2C_WRITE_BYTE){
-      currentState = 5;
-   } else if (DAC.state == I2C_DUMMY_READ){
-      currentState = 6;
-   } else if (DAC.state == I2C_READ_BYTE){
-      currentState = 7;
-   } else if (DAC.state == I2C_STOP){
-      currentState = 8;
-   } else if (DAC.state == I2C_STOP){
-      currentState = 9;
-   } else if (DAC.state == I2C_STOP){
-      currentState = 10;
-   } else{
-      currentState = -1;
-   }
-   */
-   //i2cSpeedTest(&DAC);
-   //LEDDriverWriteFull(0x2B,0x80,0x0A,0xC0,0xE4); //as in programming example on page 12
+
    if (first == 0){
       index = 1;
       first = 1;
    }
    if (index==1){
-      //DACSequentialWrite(2.5,2.5,2.5,2.5);
-      DACSingleChannelWrite(2,1.25);
-      //testDAC();
-      //testPCA();
-      index = 2;
+      DACSequentialWrite(.5,.5,.5,.5);
       DelayMs(1);
+      testPCA();
+      //DelayMs(1);
+      DACSingleChannelWrite(2,2);
+      DelayMs(1);
+      DACSingleChannelWrite(1,2);
+      index = 2;
+      //DelayMs(1);
+      LEDSetBlink(0,.01);
+      //DelayMs(1);
+      LEDSetBlink(1,.01);
+      //DelayMs(1);
+      LEDSetPWM(0,1);
+      //DelayMs(1);
+      LEDSetPWM(1,200);
+      //DelayUs(25);
+      LEDSet(LED_POWER,LED_PWM2);
+      //DelayUs(12);
+      LEDSet(LED_CHARGING,LED_ON);
+      //DelayUs(5);
+      LEDSet(LED_ERROR,LED_ON);
+      //DelayUs(3);
+      LEDSet(LED_INTERNET,LED_ON);
+
    }
    if (index ==2){
-      testPCA();   
+      //testPCA();   
       index =3;
    }
+   
+   /*
+   switch (index){
+    case 3:
+      index = 4;
+      LEDSet(1,1);
+      DelayMs(2);
+      break;
+    case 4:
+      index = 5;
+      LEDSet(2,1);
+      DelayMs(2);
+      break;   
+    case 5:
+      index = 6;
+      LEDSet(3,1);
+      DelayMs(2);
+      break;
+    case 6:
+      index = 7;
+      LEDSet(4,1);
+      DelayMs(10);
+      break;
+    case 7:
+      index = 8;
+      LEDSet(1,0);
+      DelayMs(2);
+      break;
+    case 8:
+      index = 9;
+      LEDSet(2,0);
+      DelayMs(2);
+      break;
+    case 9:
+      index = 10;
+      LEDSet(3,0);
+      DelayMs(2);
+      break;
+    case 10:
+      index = 3;
+      LEDSet(4,0);
+      DelayMs(2);
+      break;
+   }
+   */         
    
 }
                  

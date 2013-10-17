@@ -6,10 +6,10 @@
 #include "derivative.h"      /* derivative-specific definitions */
 
                          
-//extern i2cStruct *LED_Driver;
-//extern i2cStruct *DAC;
-extern i2cStruct *previous;
- 
+i2cStruct LED_Driver;
+i2cStruct DAC;
+i2cStruct *previous;
+Bool I2C_busy = 0; 
 
 void i2cInit(void){
    //*** busclock defined as BUSCLK 48000000UL
@@ -21,8 +21,7 @@ void i2cInit(void){
 //I2C finite State Machine
 
 enum i2c_states i2c_fsm(i2cStruct *device, char new_state){
-  //previous = &device;
-	if (new_state == I2C_EEPROM_RD){
+  if (new_state == I2C_EEPROM_RD){
 		device->current_command = RD; //probably need to do a #define
 		device->state = I2C_START;
 	}	
@@ -30,7 +29,9 @@ enum i2c_states i2c_fsm(i2cStruct *device, char new_state){
 		device->current_command = WR;
 		device->state = I2C_START; //go to I2C_START state
 	}
-	if (!IIC0_IBSR_TCF) return (new_state); //If transfer not complete
+	if (!IIC0_IBSR_TCF){
+	  return (new_state); //If transfer not complete
+	}
 	IIC0_IBSR_TCF = 1;  //clear the transfer complete flag
 	
 	switch (device->state){
@@ -91,7 +92,7 @@ enum i2c_states i2c_fsm(i2cStruct *device, char new_state){
 			IIC0_IBCR_MS_SL = 0;  //send a stop(go to slave mode)
 			device->state = I2C_IDLE;
 			device->ready = 1;
-			break;
+			break;                         
 	}
 }
 
@@ -122,64 +123,6 @@ void eeprom_byte_write(unsigned int address, char data ){
 }
 */
 
-
-void i2cSpeedTest(i2cStruct *device){
-  previous = device;
-	//while (i2c_fsm(device,0)!=I2C_IDLE);  // wait for fsm to go idle
-	device->buffer[0] = 0x55;
-	device->buffer[1] = 0x55; //msB of address
-	device->buffer[2] = 0x55; //lsB of address
-	device->buffer[3] = 0x55; //lsB of address
-	device->buffer[4] = 0x55; //lsB of address
-	device->buffer[5] = 0x55; //lsB of address
-	device->buffer[6] = 0x00; //lsB of address
-	device->buffer[7] = 0x55; //lsB of address
-	device->buffer[8] = 0x55; //lsB of address
-	device->ready = 0;
-	device->instructionCount = 8;
-	i2c_fsm(device,I2C_EEPROM_WR);  //set the state machine
-	while (!device->ready); // wait until command is complete
-}
-
-void i2cNoInterruptTest(i2cStruct *device){
-  previous = device;
-	(device->buffer)[0] = 0x55;
-	(device->buffer)[1] = 0x56; 
-	(device->buffer)[2] = 0x57;
-	(device->buffer)[3] = 0x00;
-	(device->buffer)[4] = 0x58;
-	(device->buffer)[5] = 0x59;
-	(device->buffer)[6] = 0x60;
-	(device->buffer)[7] = 0x61;
-	(device->buffer)[8] = 0x62;
-	device->currentInstruction = 0;
-	device->instructionCount = 8; 
-	device->ready = 0;
-	i2c_fsm(device,I2C_EEPROM_WR);  //set the state machine
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);	
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-	(void)i2c_fsm(device,0);
-	while(!IIC0_IBSR_TCF);
-}
-
-
 void initI2cStruct(i2cStruct *device){
   int i;
   for (i=0;i<15;i++){
@@ -188,5 +131,13 @@ void initI2cStruct(i2cStruct *device){
   device->instructionCount = 0;
   device->currentInstruction = 0;
   device->state = I2C_IDLE;
-  device->current_command = 0;  
+  device->current_command = 0; 
+  device->ready = 1; 
+}
+
+//Wait for fsm to finish with current operation
+void I2CWait(void){
+    while(!previous->ready){
+      (void)i2c_fsm(previous,0); 
+    }
 }

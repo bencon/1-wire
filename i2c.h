@@ -37,11 +37,10 @@ typedef struct{
 
 void i2cInit(void);
 i2c_states i2c_fsm(i2cStruct *device, char new_state);
-void i2cSpeedTest(i2cStruct *device);
-void i2cNoInterruptTest(i2cStruct *device);
 //char eeprom_byteread(uint8_t address);
 //void eeprom_byte_write(uint8_t address, char data);
 void initI2cStruct(i2cStruct *device);
+void I2CWait(void);
 
 
 

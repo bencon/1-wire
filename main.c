@@ -23,7 +23,6 @@ void interrupt SCI1_ISR(void);
 void interrupt CAN_ISR(void);
 
 #pragma CODE_SEG DEFAULT
-
 uint8_t SCI1TOBESENT;
 uint8_t SCICOUNT;
 uint8_t temp; //dummy for clearing the SCI4 recieve full flag
@@ -35,9 +34,9 @@ DS28EC20 status_28EC20;
 oneWire info;
 
 //i2c variables
-i2cStruct *previous;
-i2cStruct DAC;
-i2cStruct LED_Driver;
+extern i2cStruct *previous;
+extern i2cStruct DAC;
+extern i2cStruct LED_Driver;
 
 /*     ///main for 1-wire
 void main(void) {
@@ -65,6 +64,7 @@ void main(void){
    i2cInit();
    initI2cStruct(&DAC);
    initI2cStruct(&LED_Driver);
+   previous = &DAC;
    DelayMs(1);
    EnableInterrupts;
    for(;;) {
@@ -113,7 +113,7 @@ void DelayUs(uint16_t us){
     
 void interrupt Unimplemented_ISR(void)
 {
-  //asm BGND; //software breakpoint
+  asm BGND; //software breakpoint
 }
 
 void interrupt SCI4_ISR(void){  
@@ -144,7 +144,6 @@ void interrupt SCI1_ISR(void){
 }
 
 void interrupt CAN_ISR(void){                       
-
   uint8_t test;
   test++;
 }

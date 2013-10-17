@@ -10,12 +10,21 @@ extern i2cStruct *previous;
 //specify channel 1-4 and the voltage, eg. 2.5 that you want to write
 void DACSingleChannelWrite(uint8_t channel, double voltage){
     uint16_t a;
+    I2CWait();
     previous = &DAC;
+    initI2cStruct(&DAC);
     a = 1000*voltage;
     DAC.buffer[0] = DAC_WRITE;
     DAC.buffer[1] = (0x58 | ((channel-1)<<1));
+    //DAC.buffer[1] = 0x50;
     DAC.buffer[2] = (uint8_t)(0x90 | (a>>8));
-    DAC.buffer[3] = (uint8_t)(0xFF & a);   
+    //DAC.buffer[2] = 0x9e;
+    DAC.buffer[3] = (uint8_t)(0xFF & a);
+    //DAC.buffer[3] = 0xff;
+    DAC.currentInstruction=0;
+    DAC.instructionCount=4;
+    DAC.ready = 0;
+    (void)i2c_fsm(&DAC,I2C_EEPROM_WR);   
 }
 
 //page 40 of manual for example and how to set instruction
@@ -25,6 +34,7 @@ void DACSequentialWrite(double C1, double C2, double C3, double C4){
     uint16_t b;
     uint16_t c;
     uint16_t d;
+    I2CWait();
     previous = &DAC;
     a = 1000*C1;
     b = 1000*C2;
@@ -53,7 +63,8 @@ void DACSequentialWrite(double C1, double C2, double C3, double C4){
     DAC.buffer[8] = (uint8_t)(0x90 | (d>>8));
     DAC.buffer[9] = (uint8_t)(0xFF & d);
     DAC.instructionCount = 10;
-    DAC.currentInstruction = 0;    
+    DAC.currentInstruction = 0;
+    DAC.ready = 0;    
     (void)i2c_fsm(&DAC,I2C_EEPROM_WR);   //set the fsm}
 }
 
